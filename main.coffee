@@ -20,9 +20,9 @@ camera.lookAt(scene.position)
 
 # RENDERER
 renderer = 
-	if Detector.webgl
-		new THREE.WebGLRenderer(antialias: yes)
-	else
+	#if Detector.webgl
+	#	new THREE.WebGLRenderer(antialias: yes)
+	#else
 		new THREE.CanvasRenderer()
 
 renderer.setSize(WIDTH, HEIGHT)
@@ -43,7 +43,7 @@ $(window).on "resize", ->
 controls = new THREE.OrbitControls(camera, renderer.domElement)
 
 # LIGHTING
-light = new THREE.AmbientLight(0xaaaaa)
+light = new THREE.AmbientLight(0xaddddd)
 scene.add(light)
 
 light = new THREE.PointLight(0xffffff)
@@ -54,7 +54,7 @@ light = new THREE.PointLight(0x00ffff)
 light.position.set(225, 250, -98)
 scene.add(light)
 
-light = new THREE.PointLight(0xff00ff)
+light = new THREE.PointLight(0xafa0ff)
 light.position.set(255, -25, 97)
 scene.add(light)
 
@@ -80,10 +80,31 @@ scene.add(skyBox)
 
 ###################################
 
-materials = (new THREE.MeshLambertMaterial(color: 0xffffff) for i in [0..6])
+canvases = for i in [0..6]
+	canvas = document.createElement('canvas')
+	canvas.width = canvas.height = 1024
+	ctx = canvas.getContext('2d')
+	ctx.fillStyle = '#fff'
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+	
+	ctx.lineWidth = 5
+	ctx.strokeStyle = '#000'
+	ctx.strokeRect(0, 0, canvas.width, canvas.height)
+	
+	canvas
+
+materials = 
+	for canvas in canvases
+		map = new THREE.Texture(canvas)
+		map.needsUpdate = true
+		new THREE.MeshLambertMaterial
+			color: 0xffffff
+			side: THREE.DoubleSide
+			map: map
+
 faceMaterial = new THREE.MeshFaceMaterial(materials)
 
-productGeometry = new THREE.BoxGeometry(180, 220, 50)
+productGeometry = new THREE.BoxGeometry(180, 220, 50, 10, 10, 10)
 for face in productGeometry.faces
 	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
 
@@ -106,11 +127,18 @@ $(renderer.domElement).on "mousemove", (e)->
 	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
 
 	intersects = ray.intersectObjects([product])
+	
+	if mouse.intersect
+		mid = mouse.intersect.face.materialIndex
+		materials[mid].emissive.setHex(0x000000)
+		materials[mid].needsUpdate = true
+	
 	mouse.intersect = intersects[0]
 	
-	#if mouse.intersect
-	#	mouse.intersect.face.color.setRGB(Math.random(), Math.random(), Math.random()) 
-	#	mouse.intersect.object.geometry.colorsNeedUpdate = true
+	if mouse.intersect
+		mid = mouse.intersect.face.materialIndex
+		materials[mid].emissive.setHex(0xa0a0a0)
+		materials[mid].needsUpdate = true
 
 $("body").on "dragover dragenter drop", (e)-> 
 	e.preventDefault()
@@ -120,16 +148,19 @@ $("body").on "dragover dragenter drop", (e)->
 	
 	console.log e.type
 	if intersect
-		if dt?.files?.length
-			console.log "dropped file on box"
+		
+		mid = intersect.face.materialIndex
+		console.log mid, materials[mid]
+		
+		if e.type is "drop" and dt?.files?.length
+			console.log "dropped file[s] on box"
 			for file in dt.files
 				if file.type.match /image/
 					fr = new FileReader()
 					fr.onload = ->
-						mid = intersect.face.materialIndex
-						console.log mid, materials[mid]
 						materials[mid].map = THREE.ImageUtils.loadTexture(fr.result)
 						materials[mid].needsUpdate = true
+						intersect.object.geometry.needsUpdate = true
 					fr.readAsDataURL(file)
 				
 
