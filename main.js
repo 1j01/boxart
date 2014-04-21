@@ -28,7 +28,9 @@ camera.position.set(0, 150, 400);
 
 camera.lookAt(scene.position);
 
-renderer = new THREE.CanvasRenderer();
+renderer = Detector.webgl ? new THREE.WebGLRenderer({
+  antialias: true
+}) : new THREE.CanvasRenderer();
 
 renderer.setSize(WIDTH, HEIGHT);
 
@@ -117,7 +119,7 @@ materials = (function() {
     map.needsUpdate = true;
     _results.push(new THREE.MeshLambertMaterial({
       color: 0xffffff,
-      side: THREE.DoubleSide,
+      side: THREE.FrontSide,
       map: map
     }));
   }

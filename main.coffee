@@ -20,9 +20,9 @@ camera.lookAt(scene.position)
 
 # RENDERER
 renderer = 
-	#if Detector.webgl
-	#	new THREE.WebGLRenderer(antialias: yes)
-	#else
+	if Detector.webgl
+		new THREE.WebGLRenderer(antialias: yes)
+	else
 		new THREE.CanvasRenderer()
 
 renderer.setSize(WIDTH, HEIGHT)
@@ -99,7 +99,7 @@ materials =
 		map.needsUpdate = true
 		new THREE.MeshLambertMaterial
 			color: 0xffffff
-			side: THREE.DoubleSide
+			side: THREE.FrontSide
 			map: map
 
 faceMaterial = new THREE.MeshFaceMaterial(materials)
