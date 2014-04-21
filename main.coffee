@@ -1,7 +1,6 @@
 
 
 mouse = {x: 0, y: 0}
-keyboard = new THREEx.KeyboardState()
 
 
 # SCENE
@@ -39,7 +38,6 @@ $(window).on "resize", ->
 	camera.aspect = ASPECT
 	camera.updateProjectionMatrix()
 
-THREEx.FullScreen.bindKey(charCode: 'm'.charCodeAt(0))
 
 # CONTROLS
 controls = new THREE.OrbitControls(camera, renderer.domElement)
@@ -129,9 +127,6 @@ animate = ->
 	update()
 
 update = ->
-	# if keyboard.pressed("z")
-		# do something
-	
 	controls.update()
 	stats.update()
 
