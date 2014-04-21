@@ -11,10 +11,10 @@ mouse = {x: 0, y: 0}
 scene = new THREE.Scene()
 
 # CAMERA
-SCREEN_WIDTH = window.innerWidth
-SCREEN_HEIGHT = window.innerHeight
+WIDTH = window.innerWidth
+HEIGHT = window.innerHeight
+ASPECT = WIDTH / HEIGHT
 VIEW_ANGLE = 45
-ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT
 NEAR = 0.1
 FAR = 20000
 camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
@@ -28,11 +28,19 @@ if Detector.webgl
 else
 	renderer = new THREE.CanvasRenderer()
 
-renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT)
+renderer.setSize(WIDTH, HEIGHT)
 document.body.appendChild(renderer.domElement)
 
-# EVENTS
-THREEx.WindowResize(renderer, camera)
+
+$(window).on "resize", ->
+	WIDTH = window.innerWidth
+	HEIGHT = window.innerHeight
+	ASPECT = WIDTH / HEIGHT
+	
+	renderer.setSize(WIDTH, HEIGHT)
+	camera.aspect = ASPECT
+	camera.updateProjectionMatrix()
+
 THREEx.FullScreen.bindKey(charCode: 'm'.charCodeAt(0))
 
 # CONTROLS
