@@ -42,9 +42,20 @@ $(window).on "resize", ->
 # CONTROLS
 controls = new THREE.OrbitControls(camera, renderer.domElement)
 
-# LIGHT
+# LIGHTING
+light = new THREE.AmbientLight(0xaaaaa)
+scene.add(light)
+
 light = new THREE.PointLight(0xffffff)
-light.position.set(0, 250, 0)
+light.position.set(-25, 250, -78)
+scene.add(light)
+
+light = new THREE.PointLight(0x00ffff)
+light.position.set(225, 250, -98)
+scene.add(light)
+
+light = new THREE.PointLight(0xff00ff)
+light.position.set(255, -25, 97)
 scene.add(light)
 
 # FLOOR
@@ -62,21 +73,21 @@ scene.add(floor)
 
 # SKYBOX/FOG
 skyBoxGeometry = new THREE.CubeGeometry(10000, 10000, 10000)
-skyBoxMaterial = new THREE.MeshBasicMaterial(color: 0x9999ff, side: THREE.BackSide)
+skyBoxMaterial = new THREE.MeshBasicMaterial(color: 0x000000, side: THREE.BackSide)
 skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial)
 scene.add(skyBox)
 
 
 ###################################
 
-# this material causes a mesh to use colors assigned to faces
-faceColorMaterial = new THREE.MeshBasicMaterial(color: 0xffffff, vertexColors: THREE.FaceColors)
+materials = (new THREE.MeshLambertMaterial(color: 0xffffff) for i in [0..6])
+faceMaterial = new THREE.MeshFaceMaterial(materials)
 
 productGeometry = new THREE.CubeGeometry(180, 220, 50)
 for face in productGeometry.faces
 	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
 
-product = new THREE.Mesh(productGeometry, faceColorMaterial)
+product = new THREE.Mesh(productGeometry, faceMaterial)
 product.position.set(0, 0, 0)
 scene.add(product)
 
@@ -87,32 +98,38 @@ projector = new THREE.Projector()
 
 $(renderer.domElement).on "mousemove", (e)-> 
 
-	# the following line would stop any other event handler from firing
-	# (such as the mouse's TrackballControls)
-	# e.preventDefault()
-	
-	# update the mouse variable
 	mouse.x = (e.clientX / window.innerWidth) * 2 - 1
 	mouse.y = (e.clientY / window.innerHeight) * -2 + 1
 	
-	# find intersections
-
-	# create a Ray with origin at the mouse position
-	#   and direction into the scene (camera direction)
 	vector = new THREE.Vector3(mouse.x, mouse.y, 1)
 	projector.unprojectVector(vector, camera)
 	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
 
-	# create an array containing all objects in the scene with which the ray intersects
 	intersects = ray.intersectObjects([product])
+	mouse.intersect = intersects[0]
 	
-	# if there is one (or more) intersections
-	if intersects.length > 0
-		# change the color of the closest face.
-		intersects[0].face.color.setRGB(Math.random(), Math.random(), Math.random()) 
-		intersects[0].object.geometry.colorsNeedUpdate = true
+	#if mouse.intersect
+	#	mouse.intersect.face.color.setRGB(Math.random(), Math.random(), Math.random()) 
+	#	mouse.intersect.object.geometry.colorsNeedUpdate = true
 
-
+$("body").on "dragover dragenter drop", (e)-> 
+	e.preventDefault()
+	
+	dt = e.originalEvent.dataTransfer
+	intersect = mouse.intersect
+	
+	console.log e.type
+	if intersect and dt?.files?.length
+		console.log "dropped file on box"
+		for file in dt.files
+			if file.type.match /image/
+				fr = new FileReader()
+				fr.onload = ->
+					mid = intersect.face.materialIndex
+					materials[mid].map = THREE.ImageUtils.loadTexture(fr.result)
+					materials[mid].needsUpdate = true
+				fr.readAsDataURL(file)
+				
 
 do animate = ->
 	requestAnimationFrame(animate)
