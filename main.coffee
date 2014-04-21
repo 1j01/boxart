@@ -42,16 +42,9 @@ $(window).on "resize", ->
 # CONTROLS
 controls = new THREE.OrbitControls(camera, renderer.domElement)
 
-# STATS
-stats = new Stats()
-stats.domElement.style.position = 'absolute'
-stats.domElement.style.bottom = '0px'
-stats.domElement.style.zIndex = 100
-document.body.appendChild(stats.domElement)
-
 # LIGHT
 light = new THREE.PointLight(0xffffff)
-light.position.set(0,250,0)
+light.position.set(0, 250, 0)
 scene.add(light)
 
 # FLOOR
@@ -121,13 +114,7 @@ $(renderer.domElement).on "mousemove", (e)->
 
 
 
-animate = ->
+do animate = ->
 	requestAnimationFrame(animate)
 	renderer.render(scene, camera)
-	update()
-
-update = ->
 	controls.update()
-	stats.update()
-
-animate()
