@@ -1,10 +1,7 @@
 
 
-keyboard = new THREEx.KeyboardState()
-clock = new THREE.Clock()
-
-targetList = []
 mouse = {x: 0, y: 0}
+keyboard = new THREEx.KeyboardState()
 
 
 # SCENE
@@ -23,10 +20,11 @@ camera.position.set(0, 150, 400)
 camera.lookAt(scene.position)
 
 # RENDERER
-if Detector.webgl
-	renderer = new THREE.WebGLRenderer(antialias: yes)
-else
-	renderer = new THREE.CanvasRenderer()
+renderer = 
+	if Detector.webgl
+		new THREE.WebGLRenderer(antialias: yes)
+	else
+		new THREE.CanvasRenderer()
 
 renderer.setSize(WIDTH, HEIGHT)
 document.body.appendChild(renderer.domElement)
@@ -59,6 +57,7 @@ light.position.set(0,250,0)
 scene.add(light)
 
 # FLOOR
+###
 floorTexture = new THREE.ImageUtils.loadTexture 'images/checkerboard.jpg'
 floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping 
 floorTexture.repeat.set(10, 10)
@@ -68,6 +67,7 @@ floor = new THREE.Mesh(floorGeometry, floorMaterial)
 floor.position.y = -0.5
 floor.rotation.x = Math.PI / 2
 scene.add(floor)
+###
 
 # SKYBOX/FOG
 skyBoxGeometry = new THREE.CubeGeometry(10000, 10000, 10000)
@@ -81,22 +81,20 @@ scene.add(skyBox)
 # this material causes a mesh to use colors assigned to faces
 faceColorMaterial = new THREE.MeshBasicMaterial(color: 0xffffff, vertexColors: THREE.FaceColors)
 
-sphereGeometry = new THREE.SphereGeometry(80, 32, 16)
-for face in sphereGeometry.faces
+productGeometry = new THREE.CubeGeometry(180, 220, 50)
+for face in productGeometry.faces
 	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
 
-sphere = new THREE.Mesh(sphereGeometry, faceColorMaterial)
-sphere.position.set(0, 50, 0)
-scene.add(sphere)
-
-targetList.push(sphere)
+product = new THREE.Mesh(productGeometry, faceColorMaterial)
+product.position.set(0, 0, 0)
+scene.add(product)
 
 ###################################
 
 projector = new THREE.Projector()
 
 
-$(renderer.domElement).click (e)-> 
+$(renderer.domElement).on "mousemove", (e)-> 
 
 	# the following line would stop any other event handler from firing
 	# (such as the mouse's TrackballControls)
@@ -115,7 +113,7 @@ $(renderer.domElement).click (e)->
 	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
 
 	# create an array containing all objects in the scene with which the ray intersects
-	intersects = ray.intersectObjects(targetList)
+	intersects = ray.intersectObjects([product])
 	
 	# if there is one (or more) intersections
 	if intersects.length > 0
