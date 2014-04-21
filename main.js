@@ -82,7 +82,7 @@ scene.add(floor)
 */
 
 
-skyBoxGeometry = new THREE.CubeGeometry(10000, 10000, 10000);
+skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
 
 skyBoxMaterial = new THREE.MeshBasicMaterial({
   color: 0x000000,
@@ -106,7 +106,7 @@ materials = (function() {
 
 faceMaterial = new THREE.MeshFaceMaterial(materials);
 
-productGeometry = new THREE.CubeGeometry(180, 220, 50);
+productGeometry = new THREE.BoxGeometry(180, 220, 50);
 
 _ref = productGeometry.faces;
 for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -139,26 +139,29 @@ $("body").on("dragover dragenter drop", function(e) {
   dt = e.originalEvent.dataTransfer;
   intersect = mouse.intersect;
   console.log(e.type);
-  if (intersect && (dt != null ? (_ref1 = dt.files) != null ? _ref1.length : void 0 : void 0)) {
-    console.log("dropped file on box");
-    _ref2 = dt.files;
-    _results = [];
-    for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-      file = _ref2[_j];
-      if (file.type.match(/image/)) {
-        fr = new FileReader();
-        fr.onload = function() {
-          var mid;
-          mid = intersect.face.materialIndex;
-          materials[mid].map = THREE.ImageUtils.loadTexture(fr.result);
-          return materials[mid].needsUpdate = true;
-        };
-        _results.push(fr.readAsDataURL(file));
-      } else {
-        _results.push(void 0);
+  if (intersect) {
+    if (dt != null ? (_ref1 = dt.files) != null ? _ref1.length : void 0 : void 0) {
+      console.log("dropped file on box");
+      _ref2 = dt.files;
+      _results = [];
+      for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+        file = _ref2[_j];
+        if (file.type.match(/image/)) {
+          fr = new FileReader();
+          fr.onload = function() {
+            var mid;
+            mid = intersect.face.materialIndex;
+            console.log(mid, materials[mid]);
+            materials[mid].map = THREE.ImageUtils.loadTexture(fr.result);
+            return materials[mid].needsUpdate = true;
+          };
+          _results.push(fr.readAsDataURL(file));
+        } else {
+          _results.push(void 0);
+        }
       }
+      return _results;
     }
-    return _results;
   }
 });
 

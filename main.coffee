@@ -72,7 +72,7 @@ scene.add(floor)
 ###
 
 # SKYBOX/FOG
-skyBoxGeometry = new THREE.CubeGeometry(10000, 10000, 10000)
+skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000)
 skyBoxMaterial = new THREE.MeshBasicMaterial(color: 0x000000, side: THREE.BackSide)
 skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial)
 scene.add(skyBox)
@@ -83,7 +83,7 @@ scene.add(skyBox)
 materials = (new THREE.MeshLambertMaterial(color: 0xffffff) for i in [0..6])
 faceMaterial = new THREE.MeshFaceMaterial(materials)
 
-productGeometry = new THREE.CubeGeometry(180, 220, 50)
+productGeometry = new THREE.BoxGeometry(180, 220, 50)
 for face in productGeometry.faces
 	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
 
@@ -119,16 +119,18 @@ $("body").on "dragover dragenter drop", (e)->
 	intersect = mouse.intersect
 	
 	console.log e.type
-	if intersect and dt?.files?.length
-		console.log "dropped file on box"
-		for file in dt.files
-			if file.type.match /image/
-				fr = new FileReader()
-				fr.onload = ->
-					mid = intersect.face.materialIndex
-					materials[mid].map = THREE.ImageUtils.loadTexture(fr.result)
-					materials[mid].needsUpdate = true
-				fr.readAsDataURL(file)
+	if intersect
+		if dt?.files?.length
+			console.log "dropped file on box"
+			for file in dt.files
+				if file.type.match /image/
+					fr = new FileReader()
+					fr.onload = ->
+						mid = intersect.face.materialIndex
+						console.log mid, materials[mid]
+						materials[mid].map = THREE.ImageUtils.loadTexture(fr.result)
+						materials[mid].needsUpdate = true
+					fr.readAsDataURL(file)
 				
 
 do animate = ->
