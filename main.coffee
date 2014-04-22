@@ -71,7 +71,7 @@ canvases = for i in [0..6]
 	canvas = document.createElement('canvas')
 	canvas.width = canvas.height = 1024
 	ctx = canvas.getContext('2d')
-	ctx.fillStyle = '#fff'
+	ctx.fillStyle = '#ddd'
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 	
 	ctx.lineWidth = 5
@@ -85,7 +85,7 @@ materials =
 		map = new THREE.Texture(canvas)
 		map.needsUpdate = true
 		new THREE.MeshLambertMaterial
-			color: 0xffffff
+			color: 0xaaaaaa
 			side: THREE.FrontSide
 			map: map
 
@@ -101,16 +101,16 @@ scene.add(product)
 
 ###################################
 
-projector = new THREE.Projector()
+unprojector = new THREE.Projector()
 
-
-$(renderer.domElement).on "mousemove", (e)-> 
-
-	mouse.x = (e.offsetX / window.innerWidth) * 2 - 1
-	mouse.y = (e.offsetY / window.innerHeight) * -2 + 1
+$("body").on "mousemove dragover dragenter drop", (e)-> 
+	e.preventDefault()
+	
+	mouse.x = (e.originalEvent.offsetX / window.innerWidth) * 2 - 1
+	mouse.y = (e.originalEvent.offsetY / window.innerHeight) * -2 + 1
 	
 	vector = new THREE.Vector3(mouse.x, mouse.y, 1)
-	projector.unprojectVector(vector, camera)
+	unprojector.unprojectVector(vector, camera)
 	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
 	
 	intersects = ray.intersectObjects([product])
@@ -126,21 +126,18 @@ $(renderer.domElement).on "mousemove", (e)->
 		mid = mouse.intersect.face.materialIndex
 		materials[mid].emissive.setHex(0xa0a0a0)
 		materials[mid].needsUpdate = true
-
-$("body").on "dragover dragenter drop", (e)-> 
-	e.preventDefault()
+	
+	# # # # # # # # # # # # # #
 	
 	dt = e.originalEvent.dataTransfer
 	intersect = mouse.intersect
 	
-	console.log e.type
-	if intersect
+	if intersect and e.type isnt 'mousemove'
 		
 		mid = intersect.face.materialIndex
-		console.log mid, materials[mid]
 		
-		if e.type is "drop" and dt?.files?.length
-			console.log "dropped file[s] on box"
+		if e.type is 'drop' and dt?.files?.length
+			console.log 'dropped file[s] on box'
 			for file in dt.files
 				if file.type.match /image/
 					fr = new FileReader()
