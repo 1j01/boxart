@@ -84,7 +84,6 @@ materials = (function() {
     map = new T.Texture(canvas);
     map.needsUpdate = true;
     _results.push(new T.MeshLambertMaterial({
-      color: 0xdddddd,
       side: T.FrontSide,
       map: map
     }));
@@ -156,8 +155,7 @@ $('input').each(function(i) {
     dimensions[i] = $(this).val();
     product.scale.x = dimensions[0] * 10;
     product.scale.y = dimensions[1] * 10;
-    product.scale.z = dimensions[2] * 10;
-    return product.needsUpdate = true;
+    return product.scale.z = dimensions[2] * 10;
   }).trigger('change');
 });
 

@@ -70,7 +70,6 @@ materials =
 		map = new T.Texture(canvas)
 		map.needsUpdate = true
 		new T.MeshLambertMaterial
-			color: 0xdddddd
 			side: T.FrontSide
 			map: map
 
@@ -128,7 +127,6 @@ $('input').each (i)->
 		product.scale.x = dimensions[0] * 10
 		product.scale.y = dimensions[1] * 10
 		product.scale.z = dimensions[2] * 10
-		product.needsUpdate = true
 	).trigger('change')
 
 do animate = ->
