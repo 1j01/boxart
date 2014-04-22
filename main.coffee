@@ -1,10 +1,8 @@
 
-
-mouse = {x: 0, y: 0}
-
+T = THREE
 
 # SCENE
-scene = new THREE.Scene()
+scene = new T.Scene()
 
 # CAMERA
 WIDTH = window.innerWidth
@@ -13,7 +11,7 @@ ASPECT = WIDTH / HEIGHT
 VIEW_ANGLE = 45
 NEAR = 0.1
 FAR = 20000
-camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
+camera = new T.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
 scene.add(camera)
 camera.position.set(0, 150, 400)
 camera.lookAt(scene.position)
@@ -21,15 +19,14 @@ camera.lookAt(scene.position)
 # RENDERER
 renderer = 
 	if Detector.webgl
-		new THREE.WebGLRenderer(antialias: yes)
+		new T.WebGLRenderer(antialias: yes)
 	else
-		new THREE.CanvasRenderer()
+		new T.CanvasRenderer()
 
 renderer.setSize(WIDTH, HEIGHT)
 document.body.appendChild(renderer.domElement)
 
-
-$(window).on "resize", ->
+$(window).on 'resize', ->
 	WIDTH = window.innerWidth
 	HEIGHT = window.innerHeight
 	ASPECT = WIDTH / HEIGHT
@@ -40,28 +37,16 @@ $(window).on "resize", ->
 
 
 # CONTROLS
-controls = new THREE.OrbitControls(camera, renderer.domElement)
+controls = new T.OrbitControls(camera, renderer.domElement)
 
 # LIGHTING
-light = new THREE.AmbientLight(0xffffff)
+light = new T.AmbientLight(0xffffff)
 scene.add(light)
-# FLOOR
-###
-floorTexture = new THREE.ImageUtils.loadTexture 'images/checkerboard.jpg'
-floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping 
-floorTexture.repeat.set(10, 10)
-floorMaterial = new THREE.MeshBasicMaterial(map: floorTexture, side: THREE.DoubleSide)
-floorGeometry = new THREE.PlaneGeometry(1000, 1000, 10, 10)
-floor = new THREE.Mesh(floorGeometry, floorMaterial)
-floor.position.y = -0.5
-floor.rotation.x = Math.PI / 2
-scene.add(floor)
-###
 
 # SKYBOX/FOG
-skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000)
-skyBoxMaterial = new THREE.MeshBasicMaterial(color: 0x000000, side: THREE.BackSide)
-skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial)
+skyBoxGeometry = new T.BoxGeometry(10000, 10000, 10000)
+skyBoxMaterial = new T.MeshBasicMaterial(color: 0x000000, side: T.BackSide)
+skyBox = new T.Mesh(skyBoxGeometry, skyBoxMaterial)
 scene.add(skyBox)
 
 
@@ -82,36 +67,34 @@ canvases = for i in [0..6]
 
 materials = 
 	for canvas in canvases
-		map = new THREE.Texture(canvas)
+		map = new T.Texture(canvas)
 		map.needsUpdate = true
-		new THREE.MeshLambertMaterial
-			color: 0xaaaaaa
-			side: THREE.FrontSide
+		new T.MeshLambertMaterial
+			color: 0xdddddd
+			side: T.FrontSide
 			map: map
 
-faceMaterial = new THREE.MeshFaceMaterial(materials)
+faceMaterial = new T.MeshFaceMaterial(materials)
 
-productGeometry = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10)
-for face in productGeometry.faces
-	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
+productGeometry = new T.BoxGeometry(1, 1, 1, 10, 10, 10)
 
-product = new THREE.Mesh(productGeometry, faceMaterial)
-product.position.set(0, 0, 0)
+product = new T.Mesh(productGeometry, faceMaterial)
 scene.add(product)
 
 ###################################
 
-unprojector = new THREE.Projector()
+unprojector = new T.Projector()
+mouse = {x: 0, y: 0}
 
-$("body").on "mousemove dragover dragenter drop", (e)-> 
+$('body').on 'mousemove dragover dragenter drop', (e)-> 
 	e.preventDefault()
 	
-	mouse.x = (e.originalEvent.offsetX / window.innerWidth) * 2 - 1
-	mouse.y = (e.originalEvent.offsetY / window.innerHeight) * -2 + 1
+	mouse.x = (e.originalEvent.offsetX / WIDTH) * 2 - 1
+	mouse.y = (e.originalEvent.offsetY / HEIGHT) * -2 + 1
 	
-	vector = new THREE.Vector3(mouse.x, mouse.y, 1)
+	vector = new T.Vector3(mouse.x, mouse.y, 1)
 	unprojector.unprojectVector(vector, camera)
-	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
+	ray = new T.Raycaster(camera.position, vector.sub(camera.position).normalize())
 	
 	intersects = ray.intersectObjects([product])
 	
@@ -133,20 +116,20 @@ $("body").on "mousemove dragover dragenter drop", (e)->
 				if file.type.match /image/
 					fr = new FileReader()
 					fr.onload = ->
-						materials[mid].map = THREE.ImageUtils.loadTexture(fr.result)
+						materials[mid].map = T.ImageUtils.loadTexture(fr.result)
 						materials[mid].needsUpdate = true
 						intersect.object.geometry.needsUpdate = true
 					fr.readAsDataURL(file)
 
 dimensions = []
-$("input").each (i)->
-	$(@).on("change", ->
+$('input').each (i)->
+	$(@).on('change', ->
 		dimensions[i] = $(@).val()
 		product.scale.x = dimensions[0] * 10
 		product.scale.y = dimensions[1] * 10
 		product.scale.z = dimensions[2] * 10
 		product.needsUpdate = true
-	).trigger("change")
+	).trigger('change')
 
 do animate = ->
 	requestAnimationFrame(animate)
