@@ -43,21 +43,8 @@ $(window).on "resize", ->
 controls = new THREE.OrbitControls(camera, renderer.domElement)
 
 # LIGHTING
-light = new THREE.AmbientLight(0xaddddd)
+light = new THREE.AmbientLight(0xffffff)
 scene.add(light)
-
-light = new THREE.PointLight(0xffffff)
-light.position.set(-25, 250, -78)
-scene.add(light)
-
-light = new THREE.PointLight(0x00ffff)
-light.position.set(225, 250, -98)
-scene.add(light)
-
-light = new THREE.PointLight(0xafa0ff)
-light.position.set(255, -25, 97)
-scene.add(light)
-
 # FLOOR
 ###
 floorTexture = new THREE.ImageUtils.loadTexture 'images/checkerboard.jpg'

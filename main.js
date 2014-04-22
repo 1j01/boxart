@@ -47,25 +47,7 @@ $(window).on("resize", function() {
 
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-light = new THREE.AmbientLight(0xaddddd);
-
-scene.add(light);
-
-light = new THREE.PointLight(0xffffff);
-
-light.position.set(-25, 250, -78);
-
-scene.add(light);
-
-light = new THREE.PointLight(0x00ffff);
-
-light.position.set(225, 250, -98);
-
-scene.add(light);
-
-light = new THREE.PointLight(0xafa0ff);
-
-light.position.set(255, -25, 97);
+light = new THREE.AmbientLight(0xffffff);
 
 scene.add(light);
 
