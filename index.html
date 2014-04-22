@@ -10,10 +10,35 @@
 			margin: 0;
 			border: 0;
 			overflow: hidden;
+			font-family: Helvetica, sans-serif;
+		}
+		input {
+			width: 50px;
 		}
 	</style>
 </head>
 <body>
+	
+	<div id="controls">
+		<label>
+			Shape:
+			<select>
+				<option>Box</option>
+				<option>Cylinder</option>
+				<option>Another Box</option>
+			</select>
+		</label>
+		<labels>
+			Dimensions:
+			<input type="number" min="1" value="18"> x
+			<input type="number" min="1" value="22"> x
+			<input type="number" min="1" value="5">
+		</labels>
+		<select id="units">
+			<option>inches</option>
+			<option>centimeters</option>
+		</select>
+	</div>
 
 	<script src="./lib/Three.js"></script>
 	<script src="./lib/Detector.js"></script>

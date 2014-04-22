@@ -104,7 +104,7 @@ materials =
 
 faceMaterial = new THREE.MeshFaceMaterial(materials)
 
-productGeometry = new THREE.BoxGeometry(180, 220, 50, 10, 10, 10)
+productGeometry = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10)
 for face in productGeometry.faces
 	face.color.setRGB(0, 0, 0.8 * Math.random() + 0.2)
 
@@ -119,13 +119,13 @@ projector = new THREE.Projector()
 
 $(renderer.domElement).on "mousemove", (e)-> 
 
-	mouse.x = (e.clientX / window.innerWidth) * 2 - 1
-	mouse.y = (e.clientY / window.innerHeight) * -2 + 1
+	mouse.x = (e.offsetX / window.innerWidth) * 2 - 1
+	mouse.y = (e.offsetY / window.innerHeight) * -2 + 1
 	
 	vector = new THREE.Vector3(mouse.x, mouse.y, 1)
 	projector.unprojectVector(vector, camera)
 	ray = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize())
-
+	
 	intersects = ray.intersectObjects([product])
 	
 	if mouse.intersect
@@ -162,7 +162,16 @@ $("body").on "dragover dragenter drop", (e)->
 						materials[mid].needsUpdate = true
 						intersect.object.geometry.needsUpdate = true
 					fr.readAsDataURL(file)
-				
+
+dimensions = []
+$("input").each (i)->
+	$(@).on("change", ->
+		dimensions[i] = $(@).val()
+		product.scale.x = dimensions[0] * 10
+		product.scale.y = dimensions[1] * 10
+		product.scale.z = dimensions[2] * 10
+		product.needsUpdate = true
+	).trigger("change")
 
 do animate = ->
 	requestAnimationFrame(animate)
