@@ -140,18 +140,13 @@ $("body").on("mousemove dragover dragenter drop", function(e) {
     materials[mid].emissive.setHex(0x000000);
     materials[mid].needsUpdate = true;
   }
-  mouse.intersect = intersects[0];
-  if (mouse.intersect) {
-    mid = mouse.intersect.face.materialIndex;
+  mouse.intersect = intersect = intersects[0];
+  if (mouse.intersect && e.type !== 'mousemove') {
+    mid = intersect.face.materialIndex;
     materials[mid].emissive.setHex(0xa0a0a0);
     materials[mid].needsUpdate = true;
-  }
-  dt = e.originalEvent.dataTransfer;
-  intersect = mouse.intersect;
-  if (intersect && e.type !== 'mousemove') {
-    mid = intersect.face.materialIndex;
+    dt = e.originalEvent.dataTransfer;
     if (e.type === 'drop' && (dt != null ? (_ref1 = dt.files) != null ? _ref1.length : void 0 : void 0)) {
-      console.log('dropped file[s] on box');
       _ref2 = dt.files;
       _results = [];
       for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {

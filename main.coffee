@@ -120,24 +120,15 @@ $("body").on "mousemove dragover dragenter drop", (e)->
 		materials[mid].emissive.setHex(0x000000)
 		materials[mid].needsUpdate = true
 	
-	mouse.intersect = intersects[0]
+	mouse.intersect = intersect = intersects[0]
 	
-	if mouse.intersect
-		mid = mouse.intersect.face.materialIndex
+	if mouse.intersect and e.type isnt 'mousemove'
+		mid = intersect.face.materialIndex
 		materials[mid].emissive.setHex(0xa0a0a0)
 		materials[mid].needsUpdate = true
-	
-	# # # # # # # # # # # # # #
-	
-	dt = e.originalEvent.dataTransfer
-	intersect = mouse.intersect
-	
-	if intersect and e.type isnt 'mousemove'
 		
-		mid = intersect.face.materialIndex
-		
+		dt = e.originalEvent.dataTransfer
 		if e.type is 'drop' and dt?.files?.length
-			console.log 'dropped file[s] on box'
 			for file in dt.files
 				if file.type.match /image/
 					fr = new FileReader()
