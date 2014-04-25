@@ -51,6 +51,8 @@ scene.add(skyBox)
 
 
 ###################################
+# Product
+###################################
 
 canvases = for i in [0..6]
 	canvas = document.createElement('canvas')
@@ -79,6 +81,28 @@ productGeometry = new T.BoxGeometry(1, 1, 1, 10, 10, 10)
 
 product = new T.Mesh(productGeometry, faceMaterial)
 scene.add(product)
+
+###################################
+# Mirror
+###################################
+
+planeGeom = new THREE.PlaneGeometry(10000.1, 10000.1)
+
+groundMirror = new THREE.Mirror(
+	renderer, camera
+	{
+		clipBias: 0.003
+		textureWidth: WIDTH
+		textureHeight: HEIGHT
+		color: 0x101010
+	}
+)
+
+mirrorMesh = new THREE.Mesh(planeGeom, groundMirror.material)
+mirrorMesh.add(groundMirror)
+mirrorMesh.rotateX(-Math.PI / 2)
+mirrorMesh.position.set(0, -114, 0)
+scene.add(mirrorMesh)
 
 ###################################
 
@@ -120,16 +144,20 @@ $('body').on 'mousemove dragover dragenter drop', (e)->
 						intersect.object.geometry.needsUpdate = true
 					fr.readAsDataURL(file)
 
+
 dimensions = []
 $('input').each (i)->
 	$(@).on('change', ->
 		dimensions[i] = $(@).val()
-		product.scale.x = dimensions[0] * 10
-		product.scale.y = dimensions[1] * 10
-		product.scale.z = dimensions[2] * 10
+		s = 10
+		product.scale.x = dimensions[0] * s
+		product.scale.y = dimensions[1] * s
+		product.scale.z = dimensions[2] * s
+		mirrorMesh.position.set(0, - (dimensions[1]/2 * s + 4.23), 0)
 	).trigger('change')
 
 do animate = ->
 	requestAnimationFrame(animate)
+	groundMirror.render()
 	renderer.render(scene, camera)
 	controls.update()
