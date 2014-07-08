@@ -77,10 +77,7 @@ materials =
 
 faceMaterial = new T.MeshFaceMaterial(materials)
 
-productGeometry = new T.BoxGeometry(1, 1, 1, 10, 10, 10)
-
-product = new T.Mesh(productGeometry, faceMaterial)
-scene.add(product)
+productGeometry = product = null
 
 ###################################
 # Mirror
@@ -145,19 +142,66 @@ $('body').on 'mousemove dragover dragenter drop', (e)->
 					fr.readAsDataURL(file)
 
 
-dimensions = []
+dimensions =
+	# cuboid
+	x: 1
+	y: 1
+	z: 1
+	# cylinder
+	r: 1
+	h: 1
+
+shape = "box" or "cylinder"
+
+update_size = ->
+	s = 10
+	
+	switch shape
+		when "box"
+			product.scale.x = dimensions.x * s
+			product.scale.y = dimensions.y * s
+			product.scale.z = dimensions.z * s
+			
+			mirrorMesh.position.set(0, - (dimensions.y * s / 2 + 4.23), 0)
+		
+		when "cylinder"
+			product.scale.x = dimensions.r * s
+			product.scale.y = dimensions.h * s
+			product.scale.z = dimensions.r * s
+			
+			mirrorMesh.position.set(0, - (dimensions.h * s / 2 + 4.23), 0)
+
 $('input').each (i)->
+	d = 'xyzrh'[i]
 	$(@).on('change', ->
-		dimensions[i] = $(@).val()
-		s = 10
-		product.scale.x = dimensions[0] * s
-		product.scale.y = dimensions[1] * s
-		product.scale.z = dimensions[2] * s
-		mirrorMesh.position.set(0, - (dimensions[1]/2 * s + 4.23), 0)
-	).trigger('change')
+		dimensions[d] = $(@).val()
+		update_size()
+	)
+
+$('select#template').on 'change', ->
+	shape = $(@).val()
+	
+	switch shape
+		when "box"
+			productGeometry = new T.BoxGeometry(1, 1, 1, 10, 10, 10)
+			$('#cuboid-dimensions').show()
+			$('#cylindrical-dimensions').hide()
+		
+		when "cylinder"
+			productGeometry = new T.CylinderGeometry(1, 1, 1, 25, 25, no)
+			$('#cuboid-dimensions').hide()
+			$('#cylindrical-dimensions').show()
+	
+	scene.remove(product) if product
+	product = new T.Mesh(productGeometry, faceMaterial)
+	scene.add(product)
+	update_size()
 
 do animate = ->
 	requestAnimationFrame(animate)
 	groundMirror.render()
 	renderer.render(scene, camera)
 	controls.update()
+
+$('select').trigger('change')
+$('input').trigger('change')

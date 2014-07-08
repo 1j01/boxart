@@ -23,29 +23,32 @@
 		input {
 			width: 50px;
 		}
+		.dimensions {
+			float: right;
+		}
 	</style>
 </head>
 <body>
 	
 	<div id="controls">
 		<label>
-			Shape:
-			<select>
-				<option>Box</option>
-				<option>Cylinder</option>
-				<option>Another Box</option>
+			Template:
+			<select id="template">
+				<option value="box">Box</option>
+				<option value="cylinder">Cylinder</option>
+				<option value="box">Another Box</option>
 			</select>
 		</label>
-		<labels>
+		<div id="cuboid-dimensions" class="dimensions" style="display:none">
 			Dimensions:
 			<input type="number" min="1" value="18"> x
 			<input type="number" min="1" value="22"> x
 			<input type="number" min="1" value="5">
-		</labels>
-		<select id="units">
-			<option>inches</option>
-			<option>centimeters</option>
-		</select>
+		</div>
+		<div id="cylindrical-dimensions" class="dimensions" style="display:none">
+			<label>Radius: <input type="number" min="1" value="10"></label>
+			<label>Height: <input type="number" min="1" value="22"></label>
+		</div>
 	</div>
 
 	<script src="./lib/Three.js"></script>
